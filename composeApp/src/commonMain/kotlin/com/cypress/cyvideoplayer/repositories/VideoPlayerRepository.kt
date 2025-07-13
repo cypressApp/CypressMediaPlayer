@@ -1,0 +1,4 @@
+package com.cypress.cyvideoplayer.repositories
+
+expect interface VideoPlayerRepository
+expect class VideoPlayerRepositoryImp
