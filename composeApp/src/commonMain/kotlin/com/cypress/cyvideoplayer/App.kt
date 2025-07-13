@@ -8,6 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.cypress.cyvideoplayer.composables.VideoPlayer
 import com.cypress.cyvideoplayer.viewModels.VideoListViewModel
 import com.cypress.cyvideoplayer.viewModels.VideoViewModel
@@ -21,10 +23,10 @@ import org.koin.core.annotation.KoinExperimentalAPI
 @Preview
 fun App() {
     MaterialTheme {
-        val videoPlayerModel: VideoViewModel = koinViewModel()
-        Column {
-            VideoPlayer("", modifier = Modifier.fillMaxWidth().height(250.dp) , videoPlayerModel )
-        }
-
+        val navController = rememberNavController()
+//        NavHost(navController , startDestination = "home"){
+//            composable("home") { VideoPlayer() }
+//        }
+        VideoPlayer(modifier = Modifier.fillMaxWidth().height(250.dp))
     }
 }

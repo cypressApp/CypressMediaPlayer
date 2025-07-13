@@ -1,7 +1,5 @@
 package com.cypress.cyvideoplayer.repositories
 
-actual interface VideoListRepository
-actual class VideoListRepositoryImp
 actual class VideoItem {
     actual val id: Long
         get() = TODO("Not yet implemented")

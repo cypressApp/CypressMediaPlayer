@@ -7,15 +7,19 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +28,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
 import com.cypress.cyvideoplayer.viewModels.VideoListViewModel
@@ -37,16 +45,17 @@ import org.koin.compose.viewmodel.koinViewModel
 import androidx.core.net.toUri
 
 @Composable
-actual fun VideoPlayer(uri: String, modifier: Modifier , viewModel: VideoViewModel) {
+actual fun VideoPlayer(modifier: Modifier) {
 
     val context = LocalContext.current
     val videoListViewModel : VideoListViewModel = koinViewModel()
+    val videoPlayerViewModel: VideoViewModel = koinViewModel()
     val videoList by videoListViewModel.videoList.collectAsState()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri : Uri? ->
-            viewModel.play(uri)
+            videoPlayerViewModel.play(uri)
         }
     )
 
@@ -70,7 +79,7 @@ actual fun VideoPlayer(uri: String, modifier: Modifier , viewModel: VideoViewMod
         AndroidView(
             factory = {
                 PlayerView(context).apply {
-                    player = viewModel.exoPlayer
+                    player = videoPlayerViewModel.exoPlayer
                     useController = true
                     layoutParams = FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -88,11 +97,23 @@ actual fun VideoPlayer(uri: String, modifier: Modifier , viewModel: VideoViewMod
                     .fillMaxWidth()
                     .padding(8.dp)
                     .clickable{
-                        viewModel.play(videoItem.uriString.toUri())
-                    }) {
+                        videoPlayerViewModel.play(videoItem.uri.toUri())
+                    } ,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    videoItem.thumbnail?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier.size(52.dp)
+                                .clip(RoundedCornerShape(16.dp)), // Rounded corners
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(4.dp))
                     Text(
-                        text = videoItem.title ?: "Untitled",
-                        modifier = Modifier.weight(1f)
+                        text = videoItem.title,
+                        modifier = Modifier.weight(1f),
+                        fontSize = 12.sp
                     )
                 }
             }

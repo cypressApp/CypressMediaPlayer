@@ -2,25 +2,35 @@ package com.cypress.cyvideoplayer.repositories
 
 import android.content.ContentUris
 import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.provider.MediaStore
-import android.util.Log
+import com.cypress.cyvideoplayer.common.Resources
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+
+actual class VideoItem(
+    actual val id: Long,
+    actual val title: String,
+    actual val uri: String,
+    val thumbnail: Bitmap? // platform-specific field
+)
 
 actual interface VideoListRepository{
-
-    fun getVideoList(): List<VideoItem>
-
+    fun getVideoList() : Flow<Resources<VideoItem>>
 }
 
 actual class VideoListRepositoryImp(val context: Context) : VideoListRepository{
 
-    override fun getVideoList(): List<VideoItem> {
+    override fun getVideoList() : Flow<Resources<VideoItem>> = flow {
 
-        val videoList = mutableListOf<VideoItem>()
         val collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Video.Media._ID,
             MediaStore.Video.Media.TITLE
         )
+
+        val retriever = MediaMetadataRetriever()
 
         context.contentResolver.query(
             collection,
@@ -36,11 +46,21 @@ actual class VideoListRepositoryImp(val context: Context) : VideoListRepository{
                 val id = cursor.getLong(idColumn)
                 val title = cursor.getString(titleColumn)
                 val uri = ContentUris.withAppendedId(collection, id)
-                videoList.add(VideoItem(id, title, uri.toString()))
+                var tempItem : VideoItem
+                try {
+                    retriever.setDataSource(context, uri)
+                    val frameBitmap = retriever.getFrameAtTime(0, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+                    tempItem = VideoItem(id, title, uri.toString(), frameBitmap)
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    tempItem = VideoItem(id, title, uri.toString(), null)
+                }
+
+                emit(Resources.Success<VideoItem>(tempItem))
             }
         }
-        Log.e("VideoList" , "LIST Size : ${videoList.size}")
-        return videoList
+        retriever.release()
     }
 
 

@@ -6,8 +6,6 @@ import com.cypress.cyvideoplayer.viewModels.VideoViewModel
 
 @Composable
 actual fun VideoPlayer(
-    uri: String,
-    modifier: Modifier,
-    viewModel: VideoViewModel
+    modifier: Modifier
 ) {
 }
