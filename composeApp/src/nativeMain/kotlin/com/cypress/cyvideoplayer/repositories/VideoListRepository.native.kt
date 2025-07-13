@@ -1,0 +1,4 @@
+package com.cypress.cyvideoplayer.repositories
+
+actual interface VideoListRepository
+actual class VideoListRepositoryImp
