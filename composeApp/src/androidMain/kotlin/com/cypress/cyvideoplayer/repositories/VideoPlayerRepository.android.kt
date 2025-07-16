@@ -8,7 +8,7 @@ actual interface VideoPlayerRepository{
     val exoPlayer: ExoPlayer
     fun release()
     fun play(uri : Uri?)
-
+    fun stop()
 }
 
 actual class VideoPlayerRepositoryImp(override val exoPlayer : ExoPlayer) : VideoPlayerRepository {
@@ -22,6 +22,10 @@ actual class VideoPlayerRepositoryImp(override val exoPlayer : ExoPlayer) : Vide
             exoPlayer.prepare()
             exoPlayer.play()
         }
+    }
+
+    override fun stop(){
+        exoPlayer.stop()
     }
 
 }

@@ -41,8 +41,11 @@ kotlin {
             implementation("androidx.media3:media3-exoplayer:1.7.1")
             implementation("androidx.media3:media3-ui:1.7.1")
             implementation("androidx.media3:media3-common:1.7.1")
-            implementation("com.google.accompanist:accompanist-permissions:0.28.0")
-            implementation("androidx.navigation:navigation-compose:2.7.7")
+            implementation("com.google.accompanist:accompanist-permissions:0.37.3")
+            implementation("androidx.navigation:navigation-compose:2.9.2")
+            implementation("androidx.compose.material3:material3:1.3.2")
+            implementation(project.dependencies.platform("androidx.compose:compose-bom:2024.02.01"))
+
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)

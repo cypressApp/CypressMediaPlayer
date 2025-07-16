@@ -13,7 +13,7 @@ actual class VideoItem(
     actual val id: Long,
     actual val title: String,
     actual val uri: String,
-    val thumbnail: Bitmap? // platform-specific field
+    val thumbnail: Bitmap?
 )
 
 actual interface VideoListRepository{

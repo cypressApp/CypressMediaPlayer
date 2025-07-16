@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
@@ -42,22 +43,22 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.core.net.toUri
+import com.cypress.cyvideoplayer.repositories.VideoItem
+import org.koin.core.annotation.KoinExperimentalAPI
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
-actual fun VideoPlayer(modifier: Modifier) {
+actual fun VideoListScreen(onNavigation : (VideoItem) -> Unit) {
 
-    val context = LocalContext.current
     val videoListViewModel : VideoListViewModel = koinViewModel()
-    val videoPlayerViewModel: VideoViewModel = koinViewModel()
     val videoList by videoListViewModel.videoList.collectAsState()
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri : Uri? ->
-            videoPlayerViewModel.play(uri)
-        }
-    )
+//    val launcher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.GetContent(),
+//        onResult = { uri : Uri? ->
+//            videoPlayerViewModel.play(uri)
+//        }
+//    )
 
 //    DisposableEffect(Unit) {
 //        onDispose {
@@ -70,25 +71,11 @@ actual fun VideoPlayer(modifier: Modifier) {
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        Button(onClick = {
-            launcher.launch("video/*")
-        }) {
-            Text("Open Video")
-        }
-
-        AndroidView(
-            factory = {
-                PlayerView(context).apply {
-                    player = videoPlayerViewModel.exoPlayer
-                    useController = true
-                    layoutParams = FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                }
-            },
-            modifier = modifier
-        )
+//        Button(onClick = {
+//            launcher.launch("video/*")
+//        }) {
+//            Text("Open Video")
+//        }
 
         LazyColumn {
             items(videoList){ videoItem ->
@@ -97,7 +84,8 @@ actual fun VideoPlayer(modifier: Modifier) {
                     .fillMaxWidth()
                     .padding(8.dp)
                     .clickable{
-                        videoPlayerViewModel.play(videoItem.uri.toUri())
+                        onNavigation(videoItem)
+                       // videoPlayerViewModel.play(videoItem.uri.toUri())
                     } ,
                     verticalAlignment = Alignment.CenterVertically) {
                     videoItem.thumbnail?.let {
@@ -121,13 +109,13 @@ actual fun VideoPlayer(modifier: Modifier) {
 
     }
 
-    checkVideoPermission()
+    CheckVideoPermission()
 
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, KoinExperimentalAPI::class)
 @Composable
-fun checkVideoPermission() {
+fun CheckVideoPermission() {
 
     val videoListViewModel : VideoListViewModel = koinViewModel()
 

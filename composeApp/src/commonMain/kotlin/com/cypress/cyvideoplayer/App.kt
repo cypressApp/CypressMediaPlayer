@@ -1,32 +1,36 @@
 package com.cypress.cyvideoplayer
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHost
-import androidx.navigation.compose.rememberNavController
-import com.cypress.cyvideoplayer.composables.VideoPlayer
-import com.cypress.cyvideoplayer.viewModels.VideoListViewModel
-import com.cypress.cyvideoplayer.viewModels.VideoViewModel
+import com.cypress.cyvideoplayer.composables.VideoListScreen
+import com.cypress.cyvideoplayer.composables.VideoPlayerScreen
+import com.cypress.cyvideoplayer.repositories.VideoItem
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
+
+sealed class Screen {
+    object VideoList : Screen()
+    data class VideoPlayer(val videoItem: VideoItem) : Screen()
+}
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        val navController = rememberNavController()
-//        NavHost(navController , startDestination = "home"){
-//            composable("home") { VideoPlayer() }
-//        }
-        VideoPlayer(modifier = Modifier.fillMaxWidth().height(250.dp))
+
+        var currentScreen by remember { mutableStateOf<Screen>(Screen.VideoList) }
+
+        when (val screen = currentScreen) {
+            is Screen.VideoList -> VideoListScreen(onNavigation = { videoItem ->
+                currentScreen = Screen.VideoPlayer(videoItem)
+            })
+            is Screen.VideoPlayer -> {
+                VideoPlayerScreen(videoItem = screen.videoItem , {
+                    currentScreen = Screen.VideoList
+                })
+            }
+        }
+
     }
 }

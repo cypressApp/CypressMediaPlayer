@@ -12,6 +12,10 @@ actual class VideoViewModel(val videoPlayerRepository: VideoPlayerRepository) : 
         videoPlayerRepository.release()
     }
 
+    fun stop(){
+        videoPlayerRepository.stop()
+    }
+
     fun play(uri: Uri?){
         videoPlayerRepository.play(uri)
     }
